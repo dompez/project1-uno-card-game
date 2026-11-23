@@ -13,15 +13,26 @@ int main() {
     // ------------------------------------------------------------------
     // GAME INTRODUCTIOIN AND INITIALIZE RANDOM SEED
     // ------------------------------------------------------------------
-    cout << "Uno card game\n";
+    cout << "-----------------------------------------"
+         << "\nWelcome to the UNO card game program!\n\n"
+         << "You and the computer will be dealt " 
+         << CARD_PER_PLAYER << " cards each.\n"
+         << "Match a card in your hand with the top"
+         << "card shown.\n"
+         << "Your goal is to not have any"
+         << "cards left in your hand.\n";
+
+    cout << "\nAre you ready to play? (press enter twice continue): ";
+    cin.get();
+
     srand(static_cast<unsigned int>(time(0)));
 
     // ------------------------------------------------------------------
-    // START CREATING MAIN UNO CARD DECK 
+    // CREATING MAIN UNO CARD DECK 
     // ------------------------------------------------------------------
     // 1. INITIALIZE OUTPUT FILE
     ofstream outputFileMain;
-    cout << "\nCreating Uno card deck...\n";
+    cout << "\nCreating UNO card deck...\n";
     outputFileMain.open("UnoMainDeck.txt");
 
     if (!outputFileMain) {
@@ -83,10 +94,10 @@ int main() {
 
     // Close input file:
     inputFileMain.close();
-    cout << "Uno card deck successfully created.\n\n";    
+    cout << "UNO card deck successfully created.\n\n";    
 
     // ------------------------------------------------------------------
-    // CREATE USER AND COMPUTER HANDS 
+    // CREATING USER HAND 
     // ------------------------------------------------------------------
     // 1. INITIALIZE FILES
     cout << "\nDealing User's cards...";
@@ -102,9 +113,9 @@ int main() {
 
     do {
         // Get random card number:
-        cout << "\n\nDeck Length: " << deckLen << "\n";
+        // cout << "\n\nDeck Length: " << deckLen << "\n";
         randUserPick = rand() % deckLen + 1;
-        cout << "Random Number Chosen: " << randUserPick << "\n";
+        // cout << "Random Number Chosen: " << randUserPick << "\n";
 
         // Open main UNO deck;
         inputFileMain.open("UnoMainDeck.txt");
@@ -122,7 +133,7 @@ int main() {
             // Chosen card found:
             if (ithCard == randUserPick) {
                 outputFileUser << userCard << endl;
-                cout << "Card Selected: " << userCard << "\n";
+                // cout << "Card Selected: " << userCard << "\n";
             }
             // If not chosen card then write to temporary main UNO deck file:
             else {
@@ -149,15 +160,92 @@ int main() {
 
         // Subtract length from deck after card selection:
         deckLen--;
-        cout << "Deck Length After Pick: " << deckLen << "\n";
+        // cout << "Deck Length After Pick: " << deckLen << "\n";
         
         // Finish current draw by incrementing user card counter:
-        cout << ithUserCard << " card drawn\n";
+        // cout << ithUserCard << " card drawn\n";
         ithUserCard++;
 
     } while (ithUserCard <= CARD_PER_PLAYER); 
 
+    // Close file:
     outputFileUser.close();
+    cout << "\nUser's deck successfully created.\n";
+
+    // ------------------------------------------------------------------
+    // CREATE COMPUTER HAND 
+    // ------------------------------------------------------------------
+    // 1. INITIALIZE FILES
+    cout << "\nDealing Computer's cards...";
+
+    // User files:
+    ofstream outputFileComp;
+    outputFileComp.open("UnoCompHand.txt");
+
+    // 2. DRAW SEVEN RANDOM CARDS FROM MAIN DECK
+    int ithCompCard = 1;            // The ith card we are drawing.
+    int randCompPick;               // The ith card from the main deck we'll draw.
+
+    do {
+        // Get random card number:
+        // cout << "\n\nDeck Length: " << deckLen << "\n";
+        randCompPick = rand() % deckLen + 1;
+        // cout << "Random Number Chosen: " << randUserPick << "\n";
+
+        // Open main UNO deck;
+        inputFileMain.open("UnoMainDeck.txt");
+        int ithCard = 0;    // ith card for iterating through main deck.
+        string compCard;    // The card the user will eventually get.
+
+        // Create temporary UNO deck and open:
+        ofstream outputFileTempMain;
+        outputFileTempMain.open("TempUnoMainDeck.txt");
+
+        // Iterate through main UNO deck until counter matches random selected card:
+        while (inputFileMain >> compCard) {
+            ithCard++;
+
+            // Chosen card found:
+            if (ithCard == randCompPick) {
+                outputFileComp << compCard << endl;
+                // cout << "Card Selected: " << compCard << "\n";
+            }
+            // If not chosen card then write to temporary main UNO deck file:
+            else {
+                outputFileTempMain << compCard << endl;
+            }
+        }
+
+        // Close files:
+        inputFileMain.close();
+        outputFileTempMain.close();
+
+        // Write temporary UNO deck to main UNO deck:
+        ifstream inputFileTempMain;
+        inputFileTempMain.open("TempUnoMainDeck.txt");
+        outputFileMain.open("UnoMainDeck.txt");
+
+        while (inputFileTempMain >> compCard) {
+            outputFileMain << compCard << endl;
+        }
+
+        // Close files:
+        outputFileMain.close();
+        inputFileTempMain.close();
+
+        // Subtract length from deck after card selection:
+        deckLen--;
+        // cout << "Deck Length After Pick: " << deckLen << "\n";
+        
+        // Finish current draw by incrementing user card counter:
+        // cout << ithCompCard << " card drawn\n";
+        ithCompCard++;
+
+    } while (ithCompCard <= CARD_PER_PLAYER); 
+
+    // Close file:
+    outputFileComp.close();
+    cout << "\nComputer's deck successfully created.\n\n";
 
     return 0;
 }
